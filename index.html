@@ -30,7 +30,7 @@
           // 修改model
           countData.count ++;
           // 通知视图
-          ev.emit('inc', countData.count)
+          ev.emit('changeState')
         },
       };
 
@@ -38,10 +38,7 @@
       class Count extends React.Component {
         constructor(props) {
           super(props);
-          this.state = {
-            // view 可以直接拿 model 的数据
-            count: countData.count
-          };
+          this.state = {};
         }
 
         increment() {
@@ -49,10 +46,9 @@
         }
 
         componentDidMount() {
-          ev.on('inc', (count) => {
-            this.setState({
-              count
-            });
+          ev.on('changeState', () => {
+            // 当 model 发生变化，重新渲染视图
+            this.setState({});
           })
         }
 
@@ -64,6 +60,7 @@
               React.createElement(
                 'div',
                 null,
+                // view 可以直接取得模型的数据
                 countData.count
               ),
               React.createElement(
