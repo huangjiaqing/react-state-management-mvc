@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>用MVC的形式来管理状态</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  </head>
+  <body>
+    <div id="#root"></div>
+    <script>
+      // model
+      const countData = {
+        count: 1
+      }
+
+      // controller
+      const ev = {
+        events: {},
+        on(type, callback) {
+          this.events[type] = callback;
+        },
+        emit(type, payload) {
+          this.events[type](payload);
+        },
+      };
+
+      const controller = {
+        increment() {
+          // 修改model
+          countData.count ++;
+          // 通知视图
+          ev.emit('inc', countData.count)
+        },
+      };
+
+      // view
+      class Count extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            count: countData.count || 0
+          };
+        }
+
+        increment() {
+          controller.increment();
+        }
+
+        componentDidMount() {
+          ev.on('inc', (count) => {
+            this.setState({
+              count
+            });
+          })
+        }
+
+        render() {
+          return (
+            React.createElement(
+              'div',
+              null,
+              React.createElement(
+                'div',
+                null,
+                countData.count
+              ),
+              React.createElement(
+                'button',
+                {
+                  onClick: () => this.increment()
+                },
+                '增加'
+              )
+            )
+          );
+        }
+      }
+
+      ReactDOM.render(
+        React.createElement(Count),
+        document.getElementById('#root')
+      );
+    </script>
+  </body>
+</html>
